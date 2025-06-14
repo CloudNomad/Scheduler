@@ -1,22 +1,31 @@
-# .github/workflows/auto-commit.yml
-
-name: schedule
+name: Daily Auto Commit
 
 on:
   schedule:
-    - cron: '0 23 * * *'  # every day at 11 PM UTC
-  workflow_dispatch:     # allows you to manually trigger it too
+    - cron: '0 00 * * *'  # Runs daily at 12 AM UTC
+  workflow_dispatch:      # Allows manual triggering
 
 jobs:
   auto-commit:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout repository
+      - name: Checkout the repo
         uses: actions/checkout@v3
 
-      - name: Make empty commit
+      - name: Set up Git config
         run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "github-actions@github.com"
-          git commit --allow-empty -m "Daily heartbeat commit"
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+      - name: Make daily update (append timestamp)
+        run: |
+          echo "Updated on $(date -u)" >> daily-log.txt
+
+      - name: Commit and push changes
+        run: |
+          git add .
+          git commit -m "Daily auto-commit: $(date -u)" || echo "No changes to commit"
           git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
