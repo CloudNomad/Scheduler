@@ -1,34 +1,56 @@
-name: Daily Auto Commit
+name: Infinite Enhanced Smiley Faces
 
 on:
   schedule:
-    - cron: '0 18 * * *'  # Runs daily at 6 PM UTC
-  workflow_dispatch:      # Allows manual triggering
-
-permissions:
-  contents: write
+    - cron: '0 21 * * *'  # Runs every day at 9 PM UTC
+  workflow_dispatch:       # Optional manual run
 
 jobs:
-  auto-commit:
+  smiley-art:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout the repo
-        uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Set up Git config
+      - name: Draw enhanced smiley face row
         run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
+          git config user.name "smiley-bot"
+          git config user.email "smiley@bot.com"
 
-      - name: Make daily update (append timestamp)
-        run: |
-          echo "Updated on $(date -u)" >> daily-log.txt
+          # New expressive smiley pattern (brightness deltas: 0–4)
+          pattern=(
+            "0333330"
+            "3040403"
+            "3040403"
+            "3000003"
+            "3003003"
+            "3033303"
+            "0333330"
+          )
 
-      - name: Commit and push changes
-        run: |
-          git add .
-          git commit -m "Daily auto-commit: $(date -u)" || echo "No changes to commit"
-          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} HEAD:main
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Select today's row in the 7-row smiley pattern
+          row_index=$(( $(date +%s) / 86400 % 7 ))
+          row="${pattern[$row_index]}"
+
+          echo "Rendering smiley row $row_index: $row"
+
+          for col in $(seq 0 6); do
+            # Base background commit (1 per cell)
+            echo "$RANDOM-$row_index-$col-bg" >> pixel.txt
+            git add pixel.txt
+            git commit -m "Background pixel ($row_index,$col)"
+
+            # Add extra commits for smiley pixels (brightness 1–4)
+            brightness="${row:$col:1}"
+            if [[ "$brightness" -gt 0 ]]; then
+              for extra in $(seq 1 $brightness); do
+                echo "$RANDOM-$row_index-$col-smiley-$extra" >> pixel.txt
+                git add pixel.txt
+                git commit -m "Smiley pixel ($row_index,$col) +$extra brightness"
+              done
+            fi
+          done
+
+      - name: Push to repository
+        run: git push
