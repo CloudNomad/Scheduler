@@ -2,7 +2,7 @@ name: Infinite Enhanced Smiley Faces
 
 on:
   schedule:
-    - cron: '55 21 * * *'  # Runs daily at 9:34 PM UTC
+    - cron: '48 22 * * *'  # Runs daily at 10:48 PM UTC
   workflow_dispatch:
 
 jobs:
@@ -13,17 +13,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Required for proper commit history
+          fetch-depth: 0  # Required for push/pull and commit history
 
       - name: Draw enhanced smiley face row
         run: |
           git config user.name "smiley-bot"
           git config user.email "smiley@bot.com"
 
-          # Ensure file exists
+          # Ensure file exists (Git needs something to track)
           touch pixel.txt
 
-          # New expressive smiley pattern (extra brightness 0–4)
+          # Smiley pattern (brightness deltas: 0–4)
           pattern=(
             "0333330"
             "3040403"
@@ -34,25 +34,25 @@ jobs:
             "0333330"
           )
 
-          # Choose today’s row (cycles every 7 days)
+          # Determine today's row (cycle through 0–6)
           row_index=$(( $(date +%s) / 86400 % 7 ))
           row="${pattern[$row_index]}"
 
           echo "Rendering smiley row $row_index: $row"
 
           for col in $(seq 0 6); do
-            # Base background commit
+            # Always make a base background commit
             echo "$RANDOM-$row_index-$col-bg" >> pixel.txt
             git add pixel.txt
-            git commit -m "Background pixel ($row_index,$col)"
+            git commit --allow-empty -m "Background pixel ($row_index,$col)"
 
-            # Extra commits for brighter smiley features
+            # Add additional commits based on brightness level
             brightness="${row:$col:1}"
             if [[ "$brightness" -gt 0 ]]; then
               for extra in $(seq 1 $brightness); do
                 echo "$RANDOM-$row_index-$col-smiley-$extra" >> pixel.txt
                 git add pixel.txt
-                git commit -m "Smiley pixel ($row_index,$col) +$extra brightness"
+                git commit --allow-empty -m "Smiley pixel ($row_index,$col) +$extra brightness"
               done
             fi
           done
