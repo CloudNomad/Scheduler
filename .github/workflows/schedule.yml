@@ -2,8 +2,11 @@ name: Infinite Enhanced Smiley Faces
 
 on:
   schedule:
-    - cron: '48 22 * * *'  # Runs daily at 10:48 PM UTC
+    - cron: '0 22 * * *'
   workflow_dispatch:
+
+permissions:
+  contents: write  # ✅ allow pushing back to the repo
 
 jobs:
   smiley-art:
@@ -13,17 +16,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Required for push/pull and commit history
+          fetch-depth: 0
 
       - name: Draw enhanced smiley face row
         run: |
           git config user.name "smiley-bot"
           git config user.email "smiley@bot.com"
-
-          # Ensure file exists (Git needs something to track)
           touch pixel.txt
 
-          # Smiley pattern (brightness deltas: 0–4)
           pattern=(
             "0333330"
             "3040403"
@@ -34,19 +34,15 @@ jobs:
             "0333330"
           )
 
-          # Determine today's row (cycle through 0–6)
           row_index=$(( $(date +%s) / 86400 % 7 ))
           row="${pattern[$row_index]}"
-
           echo "Rendering smiley row $row_index: $row"
 
           for col in $(seq 0 6); do
-            # Always make a base background commit
             echo "$RANDOM-$row_index-$col-bg" >> pixel.txt
             git add pixel.txt
             git commit --allow-empty -m "Background pixel ($row_index,$col)"
 
-            # Add additional commits based on brightness level
             brightness="${row:$col:1}"
             if [[ "$brightness" -gt 0 ]]; then
               for extra in $(seq 1 $brightness); do
@@ -58,6 +54,8 @@ jobs:
           done
 
       - name: Push to repository
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git pull --rebase
-          git push
+          git push https://x-access-token:${TOKEN}@github.com/${{ github.repository }}.git
