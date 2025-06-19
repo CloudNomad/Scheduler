@@ -2,7 +2,7 @@ name: Infinite Enhanced Smiley Faces
 
 on:
   schedule:
-    - cron: '0 22 * * *'
+    - cron: '0 16 * * *'
   workflow_dispatch:
 
 permissions:
@@ -20,8 +20,8 @@ jobs:
 
       - name: Draw enhanced smiley face row
         run: |
-          git config user.name "smiley-bot"
-          git config user.email "smiley@bot.com"
+          git config user.name "CloudNomad"
+          git config user.email "60763727+CloudNomad@users.noreply.github.com"
           touch pixel.txt
 
           pattern=(
