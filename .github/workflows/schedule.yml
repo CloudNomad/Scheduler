@@ -34,7 +34,7 @@ jobs:
             "0333330"
           )
 
-          row_index=$(( $(date +%s) / 86400 % 7 ))
+          row_index=$(( $(date +%w) ))
           row="${pattern[$row_index]}"
           echo "Rendering smiley row $row_index: $row"
 
