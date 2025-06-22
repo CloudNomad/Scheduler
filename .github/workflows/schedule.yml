@@ -2,7 +2,7 @@ name: Infinite Enhanced Smiley Faces
 
 on:
   schedule:
-    - cron: '0 16 * * *'
+    - cron: '0 10 * * *'  # Trigger at 10 AM UTC
   workflow_dispatch:
 
 permissions:
