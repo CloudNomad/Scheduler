@@ -39,18 +39,14 @@ jobs:
           echo "Rendering smiley row $row_index: $row"
 
           for col in $(seq 0 6); do
-            echo "$RANDOM-$row_index-$col-bg" >> pixel.txt
-            git add pixel.txt
-            git commit --allow-empty -m "Background pixel ($row_index,$col)"
-
             brightness="${row:$col:1}"
-            if [[ "$brightness" -gt 0 ]]; then
-              for extra in $(seq 1 $brightness); do
-                echo "$RANDOM-$row_index-$col-smiley-$extra" >> pixel.txt
-                git add pixel.txt
-                git commit --allow-empty -m "Smiley pixel ($row_index,$col) +$extra brightness"
-              done
-            fi
+            commits=$((brightness + 1))  # Always at least 1 commit per cell
+
+            for extra in $(seq 1 $commits); do
+              echo "$RANDOM-$row_index-$col-smiley-$extra" >> pixel.txt
+              git add pixel.txt
+              git commit --allow-empty -m "Smiley pixel ($row_index,$col) brightness $commits"
+            done
           done
 
       - name: Push to repository
