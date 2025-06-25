@@ -1,1 +1,2 @@
 "$RANDOM-$row_index-$col-bg" 
+29665-3-0-smiley-1
