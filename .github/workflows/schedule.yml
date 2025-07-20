@@ -1,15 +1,10 @@
-name: Infinite Enhanced Smiley Faces
+name: Infinite Smiley Faces
 
 on:
-  schedule:
-    - cron: '0 10 * * *'  # Trigger at 10 AM UTC
   workflow_dispatch:
 
-permissions:
-  contents: write  # ✅ allow pushing back to the repo
-
 jobs:
-  smiley-art:
+  draw-smiley:
     runs-on: ubuntu-latest
 
     steps:
@@ -18,12 +13,13 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Draw enhanced smiley face row
+      - name: Set up Git
         run: |
           git config user.name "CloudNomad"
           git config user.email "60763727+CloudNomad@users.noreply.github.com"
-          touch pixel.txt
 
+      - name: Draw Smiley Face using Backdated Commits
+        run: |
           pattern=(
             "0333330"
             "3040403"
@@ -34,22 +30,26 @@ jobs:
             "0333330"
           )
 
-          row_index=$(( $(date +%w) ))
-          row="${pattern[$row_index]}"
-          echo "Rendering smiley row $row_index: $row"
+          start_date=$(date -d "52 weeks ago last Sunday" +%Y-%m-%d)
 
-          for col in $(seq 0 6); do
-            brightness="${row:$col:1}"
-            commits=$((brightness + 1))  # Always at least 1 commit per cell
+          for row in $(seq 0 6); do
+            row_data=${pattern[$row]}
+            for col in $(seq 0 6); do
+              brightness="${row_data:$col:1}"
+              commits=$((brightness + 1))
+              pixel_date=$(date -d "$start_date +$((col * 7 + row)) days" +%Y-%m-%d)
 
-            for extra in $(seq 1 $commits); do
-              echo "$RANDOM-$row_index-$col-smiley-$extra" >> pixel.txt
-              git add pixel.txt
-              git commit --allow-empty -m "Smiley pixel ($row_index,$col) brightness $commits"
+              for i in $(seq 1 $commits); do
+                export GIT_AUTHOR_DATE="$pixel_date 12:00:00"
+                export GIT_COMMITTER_DATE="$pixel_date 12:00:00"
+                echo "$RANDOM-$row-$col-smiley-$i" >> pixel.txt
+                git add pixel.txt
+                git commit --allow-empty -m "Pixel ($row,$col) brightness $commits on $pixel_date"
+              done
             done
           done
 
-      - name: Push to repository
+      - name: Push Changes
         env:
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
