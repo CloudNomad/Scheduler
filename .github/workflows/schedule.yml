@@ -3,7 +3,7 @@ name: Infinite Smiley Faces
 on:
   workflow_dispatch:
   schedule:
-    - cron: '33 22 * * *'  # Runs daily at 10:31 PM UTC
+    - cron: '0 8 * * *'  # Runs daily at 8 AM UTC
 
 permissions:
   contents: write
