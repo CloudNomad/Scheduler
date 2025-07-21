@@ -2,6 +2,11 @@ name: Infinite Smiley Faces
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '31 22 * * *'  # Runs daily at 10:31 PM UTC
+
+permissions:
+  contents: write
 
 jobs:
   draw-smiley:
@@ -13,10 +18,14 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up Git
+      - name: Set up Git identity
         run: |
           git config user.name "CloudNomad"
           git config user.email "60763727+CloudNomad@users.noreply.github.com"
+
+      - name: Initialize pixel.txt (if missing)
+        run: |
+          touch pixel.txt
 
       - name: Draw Smiley Face using Backdated Commits
         run: |
@@ -40,18 +49,18 @@ jobs:
               pixel_date=$(date -d "$start_date +$((col * 7 + row)) days" +%Y-%m-%d)
 
               for i in $(seq 1 $commits); do
+                echo "$RANDOM-$row-$col-smiley-$i" >> pixel.txt
                 export GIT_AUTHOR_DATE="$pixel_date 12:00:00"
                 export GIT_COMMITTER_DATE="$pixel_date 12:00:00"
-                echo "$RANDOM-$row-$col-smiley-$i" >> pixel.txt
                 git add pixel.txt
                 git commit --allow-empty -m "Pixel ($row,$col) brightness $commits on $pixel_date"
               done
             done
           done
 
-      - name: Push Changes
+      - name: Push to repository
         env:
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          git pull --rebase
-          git push https://x-access-token:${TOKEN}@github.com/${{ github.repository }}.git
+          git pull --rebase || true
+          git push https://x-access-token:${TOKEN}@github.com/${{ github.repository }}.git || true
