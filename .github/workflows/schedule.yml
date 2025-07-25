@@ -2,7 +2,7 @@ name: Infinite Smiley Faces
 
 on:
   schedule:
-    - cron: '50 19 * * *'  # ⏰ Runs every day at 8:00 AM UTC
+    - cron: '23 21 * * *'  # ⏰ Runs every day at 21:22 UTC
   workflow_dispatch:       # 🖱️ Allows manual trigger
 
 permissions:
