@@ -2,7 +2,7 @@ name: Infinite Smiley Faces
 
 on:
   schedule:
-    - cron: '23 21 * * *'  # ⏰ Runs every day at 21:22 UTC
+    - cron: '24 21 * * *'  # ⏰ Runs every day at 21:22 UTC
   workflow_dispatch:       # 🖱️ Allows manual trigger
 
 permissions:
@@ -36,7 +36,7 @@ jobs:
             "0333330"
           )
 
-          start_date=$(date -d "52 weeks ago last Sunday" +%Y-%m-%d)
+          start_date=$(date -d "45 weeks ago last Sunday" +%Y-%m-%d)
 
           for row in $(seq 0 6); do
             row_data=${pattern[$row]}
