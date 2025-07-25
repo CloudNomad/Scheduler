@@ -1,4 +1,4 @@
-name: Infinite Smiley Faces
+name: Shapes
 
 on:
   # schedule:
@@ -27,16 +27,16 @@ jobs:
       - name: Draw Smiley Face with Backdated Commits
         run: |
           pattern=(
-            "0333330"
-            "3040403"
-            "3040403"
-            "3000003"
-            "3003003"
-            "3033303"
-            "0333330"
+            "0010100"
+            "0111110"
+            "1111111"
+            "0111110"
+            "0011100"
+            "0001000"
+            "0001000"
           )
 
-          start_date=$(date -d "38 weeks ago last Sunday" +%Y-%m-%d)
+          start_date=$(date -d "31 weeks ago last Sunday" +%Y-%m-%d)
 
           for row in $(seq 0 6); do
             row_data=${pattern[$row]}
