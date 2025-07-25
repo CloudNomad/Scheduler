@@ -36,7 +36,7 @@ jobs:
             "0333330"
           )
 
-          start_date=$(date -d "52 weeks ago last Sunday" +%Y-%m-%d)
+          start_date=$(date -d "45 weeks ago last Sunday" +%Y-%m-%d)
 
           for row in $(seq 0 6); do
             row_data=${pattern[$row]}
