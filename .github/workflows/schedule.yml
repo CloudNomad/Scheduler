@@ -27,16 +27,16 @@ jobs:
       - name: Draw Smiley Face with Backdated Commits
         run: |
           pattern=(
-            "0004000"
-            "0044400"
-            "0441440"
-            "4441444"
-            "0441440"
+            "0440440"
+            "4444444"
+            "4444444"
+            "0444440"
+            "0444440"
             "0044400"
             "0004000"
           )
 
-          start_date=$(date -d "31 weeks ago last Sunday" +%Y-%m-%d)
+          start_date=$(date -d "24 weeks ago last Sunday" +%Y-%m-%d)
 
           for row in $(seq 0 6); do
             row_data=${pattern[$row]}
