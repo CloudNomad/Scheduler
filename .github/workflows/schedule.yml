@@ -1,4 +1,4 @@
-name: Shapes
+name: Shapes #Project
 
 on:
   # schedule:
